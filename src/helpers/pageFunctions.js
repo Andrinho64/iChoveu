@@ -116,7 +116,10 @@ export function handleSearch(event) {
 
   const searchInput = document.getElementById('search-input');
   const searchValue = searchInput.value;
-  const cities = searchCities(searchValue);
-
-  cities.forEach((city) => getWeatherByCity(city.url));
+  searchCities(searchValue).then((cities) => {
+    cities.forEach((city) => {
+      getWeatherByCity(city.url).then((weather) => document.getElementById('cities')
+        .appendChild(createCityElement(weather)));
+    });
+  });
 }
