@@ -1,4 +1,4 @@
-import { getWeatherByCity, searchCities } from './weatherAPI';
+import { getForecast, getWeatherByCity, searchCities } from './weatherAPI';
 
 /**
  * Cria um elemento HTML com as informações passadas
@@ -78,7 +78,6 @@ export function showForecast(forecastList) {
  */
 export function createCityElement(cityInfo) {
   const { name, country, temp, condition, icon /* , url */ } = cityInfo;
-
   const cityElement = createElement('li', 'city');
 
   const headingElement = createElement('div', 'city-heading');
@@ -104,6 +103,9 @@ export function createCityElement(cityInfo) {
   cityElement.appendChild(headingElement);
   cityElement.appendChild(infoContainer);
 
+  const btnElement = createElement('button', 'button', 'Ver previsão');
+  tempContainer.appendChild(btnElement);
+
   return cityElement;
 }
 
@@ -118,8 +120,13 @@ export function handleSearch(event) {
   const searchValue = searchInput.value;
   searchCities(searchValue).then((cities) => {
     cities.forEach((city) => {
-      getWeatherByCity(city.url).then((weather) => document.getElementById('cities')
-        .appendChild(createCityElement(weather)));
+      getWeatherByCity(city.url).then((weather) => {
+        document.getElementById('cities').appendChild(createCityElement(weather));
+        const btns = Array.from(document.getElementsByClassName('button'));
+        btns.forEach((btn) => btn.addEventListener('click', () => {
+          getForecast(city.url).then((forecast) => showForecast(forecast));
+        }));
+      });
     });
   });
 }
